@@ -1,2 +1,2 @@
-# progressive_tandem_learning
+# Progressive Tandem Learning Framework
 The official release of the progressive tandem learning framework.
