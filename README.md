@@ -2,7 +2,7 @@
 The official release of the progressive tandem learning framework.
 
 ## Requirements
-The code has been tested with python=3.6, pytorch=1.4.0, torchvision=0.2.1
+The code has been tested with python=3.8, pytorch=1.9.0, torchvision=0.10.0
 
 ## Usage
 * Step 1: Train baseline ANN model
