@@ -4,6 +4,17 @@ The official release of the progressive tandem learning framework.
 ## Requirements
 The code has been tested with python=3.6, pytorch=1.4.0, torchvision=0.2.1
 
+## Usage
+* Step 1: Train baseline ANN model
+``` sh
+$ python train.py --h
+```
+
+* Step 2: Train SNN model with PTL framework
+``` sh
+$ python train.py --h
+```
+
 ## Citation
 If you find this toolkit useful, please consider citing following paper.
 ```
