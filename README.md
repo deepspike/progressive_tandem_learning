@@ -5,7 +5,7 @@ The official release of the progressive tandem learning (PTL) framework.
 The code has been tested with python=3.8, pytorch=1.9.0, torchvision=0.10.0
 
 ## Usage 
-These code contain the experiments on Cifar10 with the AlexNet and VGG11 architectures.
+This repo contains the code for image classificatio task on the Cifar10 dataset with the AlexNet and VGG11 architectures.
 * Step 1: Train baseline ANN models
 ``` sh
 $ python cifar10_AlexNet_ann.py
