@@ -7,12 +7,14 @@ The code has been tested with python=3.6, pytorch=1.4.0, torchvision=0.2.1
 ## Usage
 * Step 1: Train baseline ANN model
 ``` sh
-$ python train.py --h
+$ python cifar10_AlexNet_ann.py
+$ python cifar10_vgg11_ann.py
 ```
 
 * Step 2: Train SNN model with PTL framework
 ``` sh
-$ python train.py --h
+$ python cifar10_AlexNet_snn.py
+$ python cifar10_vgg11_snn.py
 ```
 
 ## Citation
