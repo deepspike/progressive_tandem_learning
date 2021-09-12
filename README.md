@@ -1,5 +1,5 @@
 # Progressive Tandem Learning Framework
-The official code release of the progressive tandem learning (PTL) framework.
+The official code release for the progressive tandem learning (PTL) framework.
 
 ## Requirements
 The code has been tested with python=3.8, pytorch=1.9.0, torchvision=0.10.0
