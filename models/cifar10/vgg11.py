@@ -81,7 +81,7 @@ class VGG11(nn.Module):
 		out = self.fc11(F.dropout(x10))
 
 		if not isCalVnorm:
-			return F.log_softmax(out, dim=1), None
+			return F.log_softmax(out, dim=1)
 		else:
 			net_act = [x1, x2, x3, x4, x5, x6, x7, x8, x9, x10] # record of intermediate layers' activation values
 			net_act_top_percentile = [np.percentile(act.view(-1).cpu().detach().numpy(), percent) for act in net_act]
@@ -170,7 +170,7 @@ class sVGG11(nn.Module):
 					else:
 						x = F.relu(layer_ann(x))
 
-			return F.log_softmax(x, dim=1), None
+			return F.log_softmax(x, dim=1)
 		else:
 			net_act_top_percentile = []
 			x_spike, x, x_ann = self.conv1(x_spike, x)

@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from lib.functional import LinearIF, Conv2dIF
 
-
 class LinearBN1d(nn.Module):
 	"""Compound layer with IF neuron: Linear + BN"""
 
@@ -19,7 +18,6 @@ class LinearBN1d(nn.Module):
 
 	def forward(self, input_feature_st, input_features_sc):
 		# weight update based on the surrogate linear layer
-		T = input_feature_st.shape[1]
 		output_bn = self.bn1d(self.linear(input_features_sc))
 		output = F.relu(output_bn)
 
@@ -50,7 +48,6 @@ class ConvBN2d(nn.Module):
 
 	def __init__(self, Cin, Cout, kernel_size, device=torch.device('cuda'), stride=1, \
 					padding=0, bias=True, weight_init=2.0, vthr=1.0, neuronParam=None):
-
 		super(ConvBN2d, self).__init__()
 		self.conv2dIF = Conv2dIF.apply
 		self.conv2d = torch.nn.Conv2d(Cin, Cout, kernel_size, stride, padding, bias=bias)
@@ -63,8 +60,6 @@ class ConvBN2d(nn.Module):
 		nn.init.normal_(self.bn2d.weight, 0, weight_init)
 
 	def forward(self, input_feature_st, input_features_sc):
-		T = input_feature_st.shape[1]
-		
 		# weight update based on the surrogate conv2d layer
 		output_bn = self.bn2d(self.conv2d(input_features_sc))
 		output = F.relu(output_bn)

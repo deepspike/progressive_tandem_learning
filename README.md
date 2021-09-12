@@ -23,9 +23,9 @@ If you find this code useful, please consider citing the following paper.
 ```
 @article{wu2020progressive,
   title={Progressive tandem learning for pattern recognition with deep spiking neural networks},
-  author={Wu, Jibin and Xu, Chenglin and Zhou, Daquan and Li, Haizhou and Tan, Kay Chen},
-  journal={arXiv preprint arXiv:2007.01204},
-  year={2020}
+  author={Wu, Jibin and Xu, Chenglin and Han, Xiao and Zhou, Daquan and Zhang, Malu and Li, Haizhou and Tan, Kay Chen},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  year={2021}
 }
 ```
 

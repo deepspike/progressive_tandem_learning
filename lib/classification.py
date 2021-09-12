@@ -13,7 +13,7 @@ def training(model, trainloader, optimizer, criterion, device):
 							labels.type(torch.LongTensor).to(device)
 
 		# Model computation and weight update
-		y_pred, _ = model.forward(inputs)
+		y_pred = model.forward(inputs)
 		loss = criterion(y_pred, labels)
 		_, predicted  = torch.max(y_pred.data, dim=1)
 		total += labels.size(0)
@@ -45,7 +45,7 @@ def testing(model, testLoader, criterion, device,):
 							labels.type(torch.LongTensor).to(device)
 
 		# forward pass
-		y_pred, _ = model.forward(inputs)
+		y_pred = model.forward(inputs)
 		loss = criterion(y_pred, labels)
 		_, predicted  = torch.max(y_pred.data, 1)
 		total += labels.size(0)

@@ -51,7 +51,7 @@ class AlexNet(nn.Module):
 		out = self.fc7(x6)
 
 		if not isCalVnorm:
-			return F.log_softmax(out, dim=1), None
+			return F.log_softmax(out, dim=1)
 		else:
 			net_act = [x1, x2, x3, x4, x5, x6] # record of intermediate layers' activation values
 			net_act_top_percentile = [np.percentile(act.view(-1).cpu().detach().numpy(), percent) for act in net_act]
@@ -78,7 +78,8 @@ class sAlexNet(nn.Module):
 		self.fc7 = self._layer_init(model_old.fc7, 6)
 
 	def _layer_init(self, layer, layer_idx):
-		'''replace the ANN layer with the hybrid layer'''
+		'''init network layers'''
+		# replace the ANN layer with the hybrid layer
 		if layer_idx == self.replace_idx:
 			if self.layer_list[layer_idx].startswith('conv'):
 				out_channel, in_channel, kernel_size0, kernel_size1 = layer[0].weight.shape
@@ -90,8 +91,7 @@ class sAlexNet(nn.Module):
 
 			elif self.layer_list[layer_idx].startswith('fc'):
 				layer_updated = LinearBN1d(layer[0].weight.shape[1], layer[0].weight.shape[0], \
-										   neuronParam=self.neuronParam, vthr=self.vthr[layer_idx], \
-										   device=self.device)
+										   neuronParam=self.neuronParam, vthr=self.vthr[layer_idx], device=self.device)
 				layer_updated.linear = copy.deepcopy(layer[0]) # copy weights from pre-trained ann layer
 				layer_updated.bn1d = copy.deepcopy(layer[1]) # copy bn from pre-trained ann layer
 		# copy the original layer
@@ -133,7 +133,7 @@ class sAlexNet(nn.Module):
 					else:
 						x = F.relu(layer_ann(x))
 
-			return F.log_softmax(x, dim=1), None
+			return F.log_softmax(x, dim=1)
 		else:
 			net_act_top_percentile = []
 			x_spike, x, x_ann = self.conv1(x_spike, x)

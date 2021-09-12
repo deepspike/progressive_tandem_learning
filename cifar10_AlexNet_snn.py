@@ -31,11 +31,11 @@ if __name__ == '__main__':
 	num_epochs = 150
 	lr = 1e-3
 	global best_acc_snn 
-	best_acc_snn = 0 # init with a low value
-	Tpatient = 6 # patience period in epochs before new layer is replaced
+	best_acc_snn = 0
+	Tpatient = 6 # patience period in epochs before a new layer is replaced
 	t = 0 # patience counter
 	k = 0 # replacing layer index
-	l_total = len(layer_list) - 2 # the last layer remain as ann layer after training
+	l_total = len(layer_list) - 2 # the layer index of the last layer to replace
 	test_acc_history = []
 	test_loss_history = [] 
 	epoch_convert = [0]
@@ -59,14 +59,14 @@ if __name__ == '__main__':
 
 	# replace the 1st layer
 	print('-------------------- Replace Layer # ', k+1)
-	# Analyse layerwise activation value and renormalize the threshold
-	layer_act = vthrNorm(model, train_loader, Tencode, device, percent=99.9)
+	# Analyse layerwise activation values and renormalize the threshold
+	layer_act = vthrNorm(model, train_loader, device, percent=99.9)
 	vthr_list = [act / Tencode for act in layer_act]
 	vthr_convert.append(vthr_list[k])
 	print("Updated neuron threshold of each layer ", vthr_convert)
 
-	model = sAlexNet(model, Tencode, layer_list, k, stride_list, vthr_list,
-                      neuronParam, device) # replace the ann layer to hybrid layer
+	# replace the ann layer with a hybrid layer
+	model = sAlexNet(model, Tencode, layer_list, k, stride_list, vthr_list, neuronParam, device)
 	model = model.to(device)
 	optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, weight_decay=1e-5)
 	print(model)
@@ -95,15 +95,13 @@ if __name__ == '__main__':
 
 		# Update Model
 		if k <= l_total:
-			layer_act = vthrNorm(model, train_loader, Tencode, device, percent=99.9)
+			layer_act = vthrNorm(model, train_loader, device, percent=99.9)
 			vthr_list = [act / Tencode for act in layer_act]
 			model, optimizer, k, t, best_acc_snn, epoch_convert, vthr_convert = netUpdateAcc(model, optimizer, lr,
 																							 acc_val, best_acc_snn, k,
-																							 t, \
-																							 epoch, epoch_convert,
+																							 t, epoch, epoch_convert,
 																							 Tpatient, layer_list,
-																							 Tencode, \
-																							 snn_ckp_dir, device,
+																							 Tencode, snn_ckp_dir, device,
 																							 sAlexNet, vthr_list, \
 																							 neuronParam, vthr_convert,
 																							 stride_list)
