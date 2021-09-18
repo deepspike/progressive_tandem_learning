@@ -190,8 +190,7 @@ class sVGG11(nn.Module):
 						layer_hybrid = eval('self.fc'+str(iLayer+1))
 
 					x_spike, x, x_ann = layer_hybrid(x_spike, x)
-					net_act_top_percentile.append(np.percentile(x_ann.view(-1).cpu().detach().numpy(),
-																percent))  # record ann layer activation value
+					net_act_top_percentile.append(np.percentile(x_ann.view(-1).cpu().detach().numpy(), percent))  # record ann layer activation value
 				else:
 					if self.layer_list[iLayer].startswith('conv'):
 						layer_ann = eval('self.conv'+str(iLayer+1))
@@ -202,7 +201,6 @@ class sVGG11(nn.Module):
 						x = layer_ann(x) # output layer
 					else:
 						x = F.relu(layer_ann(x))
-					net_act_top_percentile.append(np.percentile(x_ann.view(-1).cpu().detach().numpy(),
-																percent))  # record ann layer activation value
+					net_act_top_percentile.append(np.percentile(x_ann.view(-1).cpu().detach().numpy(), percent))  # record ann layer activation value
 
 			return net_act_top_percentile

@@ -78,8 +78,7 @@ class sAlexNet(nn.Module):
 		self.fc7 = self._layer_init(model_old.fc7, 6)
 
 	def _layer_init(self, layer, layer_idx):
-		'''init network layers'''
-		# replace the ANN layer with the hybrid layer
+		'''init network layer, and replace the ANN layer with the hybrid layer'''
 		if layer_idx == self.replace_idx:
 			if self.layer_list[layer_idx].startswith('conv'):
 				out_channel, in_channel, kernel_size0, kernel_size1 = layer[0].weight.shape
@@ -91,7 +90,8 @@ class sAlexNet(nn.Module):
 
 			elif self.layer_list[layer_idx].startswith('fc'):
 				layer_updated = LinearBN1d(layer[0].weight.shape[1], layer[0].weight.shape[0], \
-										   neuronParam=self.neuronParam, vthr=self.vthr[layer_idx], device=self.device)
+										   neuronParam=self.neuronParam, vthr=self.vthr[layer_idx], \
+										   device=self.device)
 				layer_updated.linear = copy.deepcopy(layer[0]) # copy weights from pre-trained ann layer
 				layer_updated.bn1d = copy.deepcopy(layer[1]) # copy bn from pre-trained ann layer
 		# copy the original layer
@@ -153,8 +153,7 @@ class sAlexNet(nn.Module):
 						layer_hybrid = eval('self.fc'+str(iLayer+1))
 
 					x_spike, x, x_ann = layer_hybrid(x_spike, x)
-					net_act_top_percentile.append(np.percentile(x_ann.view(-1).cpu().detach().numpy(),
-																percent))  # record ann layer activation value
+					net_act_top_percentile.append(np.percentile(x_ann.view(-1).cpu().detach().numpy(),percent))  # record ann layer activation value
 				else:
 					if self.layer_list[iLayer].startswith('conv'):
 						layer_ann = eval('self.conv'+str(iLayer+1))
@@ -166,7 +165,6 @@ class sAlexNet(nn.Module):
 						x = layer_ann(x)
 					else:
 						x = F.relu(layer_ann(x))
-					net_act_top_percentile.append(
-						np.percentile(x.view(-1).cpu().detach().numpy(), percent))  # record ann layer activation value
+					net_act_top_percentile.append(np.percentile(x.view(-1).cpu().detach().numpy(), percent))  # record ann layer activation value
 
 			return net_act_top_percentile

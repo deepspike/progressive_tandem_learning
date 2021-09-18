@@ -39,7 +39,7 @@ class LinearIF(torch.autograd.Function):
 		mem = torch.zeros(N, out_features, device=device)
 		spike = torch.zeros(N, out_features, device=device)  # init input spike train
 
-		# Iterate over simulation time window to determine output spike trains
+		# Iterate over simulation time steps to determine output spike trains
 		for t in range(T):
 			x = pot_in[:, t, :].squeeze() + bias_distribute
 			# Membrane potential update
@@ -62,8 +62,7 @@ class Conv2dIF(torch.autograd.Function):
 	"""2D Convolutional Layer"""
 
 	@staticmethod
-	def forward(ctx, spike_in, features_in, weight, device=torch.device('cuda'), bias=None, \
-				stride=1, padding=0, vthr=1.0, neuronParam=None):
+	def forward(ctx, spike_in, features_in, weight, device=torch.device('cuda'), bias=None, stride=1, padding=0, vthr=1.0, neuronParam=None):
 		"""
 		Params:
 			spike_in: input spike trains
@@ -73,7 +72,7 @@ class Conv2dIF(torch.autograd.Function):
 			bias: neuronal bias parameters
 			stride: stride of 1D Conv
 			padding: padding of 1D Conv
-			vthr: neuronal firing threshold
+			dilation: dilation of 1D Conv
 			neuronParam： neuronal parameters
 		Returns:
 			spike_out: output spike trains
@@ -86,14 +85,13 @@ class Conv2dIF(torch.autograd.Function):
 			raise RuntimeError("Unsupported Neuron Model: {}".format(neuronParam['neuronType']))
 		N, T, in_channels, iH, iW = spike_in.shape
 		out_channels, in_channels, kH, kW = weight.shape
-		# init the membrane potential with the bias
 		mem = torch.zeros_like(F.conv2d(spike_in[:, 0, :, :, :], weight, bias, stride, padding))
 		bias_distribute = F.conv2d(torch.zeros_like(spike_in[:, 0, :, :, :]), weight, bias, stride, padding) / T
 		_, _, outH, outW = mem.shape
 		spike_out = torch.zeros(N, T, out_channels, outH, outW, device=device)
 		spike = torch.zeros(N, out_channels, outH, outW, device=device)  # init input spike train
 
-		# Iterate over simulation time window to determine output spike trains
+		# Iterate over simulation time steps to determine output spike trains
 		for t in range(T):
 			x = F.conv2d(spike_in[:, t, :, :, :], weight, None, stride, padding) + bias_distribute
 			# Membrane potential update

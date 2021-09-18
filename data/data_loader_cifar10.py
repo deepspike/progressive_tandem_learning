@@ -27,10 +27,10 @@ def get_train_valid_loader(data_dir,
     Params
     ------
     - data_dir: path directory to the dataset.
-    - random_seed: fix seed for reproducibility.
     - batch_size: how many samples per batch to load.
     - augment: whether to apply the data augmentation scheme
       mentioned in the paper. Only applied on the train split.
+    - random_seed: fix seed for reproducibility.
     - valid_size: percentage split of the training set used for
       the validation set. Should be a float in the range [0, 1].
     - shuffle: whether to shuffle the train/validation indices.
@@ -102,7 +102,6 @@ def get_train_valid_loader(data_dir,
     )
 
     return (train_loader, valid_loader)
-
 
 def get_test_loader(data_dir,
                     batch_size=256,

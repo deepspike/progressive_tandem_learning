@@ -59,13 +59,12 @@ if __name__ == '__main__':
 
 	# replace the 1st layer
 	print('-------------------- Replace Layer # ', k+1)
-	# Analyse layerwise activation values and renormalize the threshold
+	# Analyse layerwise activation value and renormalize the threshold
 	layer_act = vthrNorm(model, train_loader, device, percent=99.9)
 	vthr_list = [act / Tencode for act in layer_act]
 	vthr_convert.append(vthr_list[k])
 	print("Updated neuron threshold of each layer ", vthr_convert)
 
-	# replace the ann layer with a hybrid layer
 	model = sAlexNet(model, Tencode, layer_list, k, stride_list, vthr_list, neuronParam, device)
 	model = model.to(device)
 	optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, weight_decay=1e-5)

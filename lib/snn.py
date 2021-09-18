@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from lib.functional import LinearIF, Conv2dIF
 
+
 class LinearBN1d(nn.Module):
 	"""Compound layer with IF neuron: Linear + BN"""
 
@@ -30,18 +31,17 @@ class LinearBN1d(nn.Module):
 		bnMean = self.bn1d.running_mean
 		bnVar = self.bn1d.running_var
 
-		# re-parameterization by integrating the beta and gamma factors
-		# into the 'Linear' layer weights
+		# re-parameterization by integrating the beta and gamma factors into the 'Linear' layer weights
 		ratio = torch.div(bnGamma, torch.sqrt(bnVar))
 		weightNorm = torch.mul(linearif_weight.permute(1, 0), ratio).permute(1, 0) 
 		biasNorm = torch.mul(linearif_bias-bnMean, ratio) + bnBeta
 
-		# propagate the input spike train through the linearIF layer to get actual output
-		# spike train
+		# propagate the input spike train through the linearIF layer to get actual output spike train
 		output_st, output_sc = self.linearif(input_feature_st, output, weightNorm, self.device, biasNorm, \
 											 self.vthr, self.neuronParam)
 
 		return output_st, output_sc, output
+
 
 class ConvBN2d(nn.Module):
 	"""Compound layer with IF neuron: Conv2d + BN"""
@@ -73,16 +73,14 @@ class ConvBN2d(nn.Module):
 		bnMean = self.bn2d.running_mean
 		bnVar = self.bn2d.running_var
 
-		# re-parameterization by integrating the beta and gamma factors
-		# into the 'Conv' layer weights
+		# re-parameterization by integrating the beta and gamma factors into the 'Conv' layer weights
 		ratio = torch.div(bnGamma, torch.sqrt(bnVar))
 		weightNorm = torch.mul(conv2d_weight.permute(1,2,3,0), ratio).permute(3,0,1,2) 
 		biasNorm = torch.mul(conv2d_bias-bnMean, ratio) + bnBeta
 
-		# propagate the input spike train through the IF layer to get actual output
-		# spike train
-		output_features_st, output_features_sc = self.conv2dIF(input_feature_st, output, weightNorm, self.device, biasNorm, self.stride, \
-														self.padding, self.vthr, self.neuronParam)
+		# propagate the input spike train through the IF layer to get actual output spike train
+		output_features_st, output_features_sc = self.conv2dIF(input_feature_st, output, weightNorm, self.device, biasNorm, \
+															   self.stride, self.padding, self.vthr, self.neuronParam)
 
 		return output_features_st, output_features_sc, output
 

@@ -31,11 +31,11 @@ if __name__ == '__main__':
 	num_epochs = 150
 	lr = 1e-3
 	global best_acc_snn 
-	best_acc_snn = 0 # init with a low value
-	Tpatient = 6 # patience period in epochs before a new layer is replaced
+	best_acc_snn = 0
+	Tpatient = 6 #  patience period in epochs before a new layer is replaced
 	t = 0 # patience counter
 	k = 0 # replacing layer index
-	l_total = len(layer_list) - 2 # the last layer remain as ann layer after training
+	l_total = len(layer_list) - 2 # the layer index of the last layer to replace
 	test_acc_history = []
 	test_loss_history = [] 
 	epoch_convert = [0]
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 	criterion = torch.nn.CrossEntropyLoss()
 	model = model.to(device)
 
-	# Load Pre-trainde ANN model
+	# Load Pre-trained ANN model
 	checkpoint = torch.load(os.path.join(ann_ckp_dir, 'cifar10_vgg11_baseline.pt'))
 	model.load_state_dict(checkpoint['model_state_dict'])
 	optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 	vthr_convert.append(vthr_list[k])
 	print("Updated neuron threshold of each layer ", vthr_convert)
 
-	model = sVGG11(model, Tencode, layer_list, k, stride_list, vthr_list, neuronParam, device)
+	model = sVGG11(model, Tencode, layer_list, k, stride_list, vthr_list, neuronParam, device) # replace the ann layer to hybrid layer
 	model = model.to(device)
 	optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, weight_decay=1e-5)
 	print(model)

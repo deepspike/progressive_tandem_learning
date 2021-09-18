@@ -3,7 +3,6 @@ import os
 
 from lib.utils import save_checkpoint
 
-
 def freezeLayer(model, layer_list, layer_idx):
 	''' freeze the hybrid layer '''
 
@@ -14,12 +13,10 @@ def freezeLayer(model, layer_list, layer_idx):
 	
 	return model
 
-
 def netUpdateAcc(model, optimizer, lr, acc_val, best_acc, k, t, epoch, epoch_convert, Tpatient, layer_list, Tsim,
 				 ckp_dir, device, buildModel, vthr_list, neuronParam, vthr_convert, stride_list):
 	""" Adaptive training schedule to control the training by network validation accuracy (fo regression tasks,
 		the validation loss will be used)
-
 	Args:
 		model (object): model to update
 		optimizer (object): optimizer to update
@@ -59,22 +56,22 @@ def netUpdateAcc(model, optimizer, lr, acc_val, best_acc, k, t, epoch, epoch_con
 			print(f'-------------------- Freeze Layer {k + 1}')
 			epoch_convert.append(epoch)
 			checkpoint = torch.load(os.path.join(ckp_dir, "{0}.pt.tar".format("best")))
-			model.load_state_dict(checkpoint['model_state_dict'])  # restore the model with the best acc during the stage
+			model.load_state_dict(checkpoint['model_state_dict'])  # restore the model with best_loss
 			model = freezeLayer(model, layer_list, k)  # freeze the snn layer
 			k += 1
 			model = model.to(device)
-			optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr * 0.1,
-										 weight_decay=1e-5)
+			optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr*0.1, weight_decay=1e-5)
 			t = 0
 		elif t == Tpatient and k < len(layer_list) - 2:
 			print(f'-------------------- Freeze Layer {k + 1} and Replace Layer {k + 2}')
 			epoch_convert.append(epoch)
 			checkpoint = torch.load(os.path.join(ckp_dir, "{0}.pt.tar".format("best")))
-			model.load_state_dict(checkpoint['model_state_dict'])  # restore the model with the best acc during the stage
+			model.load_state_dict(checkpoint['model_state_dict'])  # restore the model with best acc during the stage
 			model = freezeLayer(model, layer_list, k)  # freeze the snn layer
 			k += 1
 			vthr_convert.append(vthr_list[k])
-			model = buildModel(model, Tsim, layer_list, k, stride_list, vthr_convert, neuronParam, device)  # replace the ann layer to a hybrid layer
+			print("Updated neuron threshold of each layer ", vthr_convert)
+			model = buildModel(model, Tsim, layer_list, k, stride_list, vthr_convert, neuronParam, device)  # replace the ann layer to hybrid layer
 			model = freezeLayer(model, layer_list, k)  # freeze the snn layer
 			model = model.to(device)
 			print(model)
@@ -96,14 +93,14 @@ def netUpdateAcc(model, optimizer, lr, acc_val, best_acc, k, t, epoch, epoch_con
 def vthrNorm(model, data_loader, device, percent=99):
 	"""Perform threshold normalization to better ultilize the encoding time window"""
 
-	model.eval()
+	model.eval()  # Put the model in test mode
 
 	(inputs, labels) = next(iter(data_loader))  # use one batch of data to estimate the firing threshold
 
 	# Transfer to GPU
 	inputs = inputs.type(torch.FloatTensor).to(device)
 
-	# forward pass to get layerwise activation values determined by the percentile
+	# forward pass to get layerwise activation values
 	net_act_max = model.forward(inputs, isCalVnorm=True, percent=percent)
 
 	return net_act_max
